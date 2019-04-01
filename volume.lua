@@ -71,9 +71,11 @@ local function update_master(volume_graph)
       state, value = get_master_infos(volume_graph)
       volume_graph:set_value(value/100)
       if state == false then
-	 volume_graph:set_label(data[volume_graph].label)
+         volume_graph:set_label(data[volume_graph].label)
+         volume_graph:set_graph_color(volume_graph.graph_color or "#00FF0055")
       else
-	 volume_graph:set_label("off")
+         volume_graph:set_label("off")
+         volume_graph:set_graph_color(volume_graph.graph_muted_color or "#FF000055")
       end
     end)
    data[volume_graph].mastertimer:start()
@@ -177,15 +179,17 @@ end
 function volume.new(args)
    local args = args or {}
    local volume_graph = triangular_progress_graph(args)
-    data[volume_graph] = {}
-    data[volume_graph].label = args.label or "$percent%"
-    data[volume_graph].cmd = args.cmd or "amixer"
-    data[volume_graph].increment = args.increment or 2
-    data[volume_graph].pulseaudio = args.pulseaudio or false
-    volume_graph.update_master = update_master
-    volume_graph.update_mpd= update_mpd
-    volume_graph.set_master_control = set_master_control
-    return volume_graph
+   data[volume_graph] = {}
+   data[volume_graph].label = args.label or "$percent%"
+   data[volume_graph].cmd = args.cmd or "amixer"
+   data[volume_graph].increment = args.increment or 2
+   data[volume_graph].pulseaudio = args.pulseaudio or false
+   volume_graph.graph_background_color = args.graph_background_color
+   volume_graph.graph_muted_color = args.graph_muted_color
+   volume_graph.update_master = update_master
+   volume_graph.update_mpd= update_mpd
+   volume_graph.set_master_control = set_master_control
+   return volume_graph
 end
 
 function volume.mt:__call(...)
